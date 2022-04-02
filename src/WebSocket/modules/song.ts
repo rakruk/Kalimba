@@ -1,4 +1,4 @@
-import { canModifySongs, Constitution, createMessage, CstSongReqAdd, CstSongReqRemove, CstSongResUpdate, CstSongReqUnsubscribe, EventType, extractMessageData, Message, Song, SongPlatform, ConstitutionType } from "chelys";
+import { canModifySongs, Constitution, createMessage, CstSongReqAdd, CstSongReqRemove, CstSongResUpdate, CstSongReqUnsubscribe, EventType, extractMessageData, Message, Song, SongPlatform, ConstitutionType, Title } from "chelys";
 import { firestore } from "../firebase";
 import { isNil, max } from "lodash";
 import { Client } from "../../Types/client";
@@ -110,11 +110,18 @@ export class SongModule extends SubModule<Constitution> {
 
 		const songData = requestData.songData;
 
+		const title: Title = {
+			original: cleanupString(songData.title.original, SONG_NAME_LENGTH),
+		};
+		if (!isNil(songData.title.translation)) {
+			title.translation = cleanupString(songData.title.translation, SONG_AUTHOR_LENGTH);
+		}
+
 		const song: Song = {
 			id: this.nextSongId(),
 			author: cleanupString(songData.author, SONG_AUTHOR_LENGTH),
 			platform: songData.platform ?? SongPlatform.YOUTUBE,
-			title: cleanupString(songData.title, SONG_NAME_LENGTH),
+			title,
 			url: songData.url,
 			user: client.uid
 		};

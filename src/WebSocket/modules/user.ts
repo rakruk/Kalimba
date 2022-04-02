@@ -1,4 +1,4 @@
-import { EventType, extractMessageData, Message, Role, User, UsrReqEdit, UsrReqGet, UsrReqUnsubscribe, UsrResUpdate } from "chelys";
+import { EventType, extractMessageData, Message, Role, User, UsrReqEditProfile, UsrReqGet, UsrReqUnsubscribe, UsrResUpdate } from "chelys";
 import { isNil } from "lodash";
 import { Client } from "../../Types/client";
 import { createID, firestore } from "../firebase";
@@ -26,7 +26,7 @@ class UserModule extends Module {
 		super();
 		this.moduleMap.set(EventType.USER_get, this.get);
 		this.moduleMap.set(EventType.USER_get_all, this.getAll);
-		this.moduleMap.set(EventType.USER_edit, this.edit);
+		this.moduleMap.set(EventType.USER_edit_profile, this.edit);
 		this.moduleMap.set(EventType.USER_create, this.create);
 		this.moduleMap.set(EventType.USER_unsubscribe, this.unsubscribe);
 
@@ -86,7 +86,7 @@ class UserModule extends Module {
 	}
 
 	private async edit(message: Message<unknown>, client: Client): Promise<void> {
-		const requestData = extractMessageData<UsrReqEdit>(message).userData;
+		const requestData = extractMessageData<UsrReqEditProfile>(message).userData;
 		const localUser = this.users.get(requestData.uid);
 		if (client.uid !== requestData.uid || isNil(localUser)) {
 			return;
@@ -103,7 +103,7 @@ class UserModule extends Module {
 	}
 
 	private async create(message: Message<unknown>, client: Client): Promise<void> {
-		const requestData = extractMessageData<UsrReqEdit>(message).userData;
+		const requestData = extractMessageData<UsrReqEditProfile>(message).userData;
 		if (isNil(requestData)
 			|| client.uid !== requestData.uid
 			|| isNil(requestData.email)
